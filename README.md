@@ -1,4 +1,4 @@
-# IdenticonSharp ![Core NuGet][core-badge] ![AspNetCore NuGet][asp-badge]
+# IdenticonSharp [![Core NuGet][core-badge]][core-nuget] [![AspNetCore NuGet][asp-badge]][asp-nuget]
 
 Cross-platform extendable library that allows you to create a variety of identicons without any efforts
 

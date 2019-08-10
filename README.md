@@ -51,8 +51,8 @@ If you need to replace *and/or* configure the default identicon generator, you c
 IdenticonManager.ConfigureDefault<GitHubIdenticonProvider, GitHubIdenticonOptions>(options => {
     // Configuring the parameters
     options.Background = new Rgba32(240, 240, 240);
-    options.SpriteSize = new Size(10, 10);
-    options.Size = new Size(256, 256);
+    options.SpriteSize = 10;
+    options.Size = 256;
     options.HashAlgorithm = HashProvider.SHA512;
 });
 ```
@@ -90,8 +90,8 @@ public void ConfigureServices(IServiceCollection services)
     services.AddIdenticonSharp<GitHubIdenticonProvider, GitHubIdenticonOptions>(options => {
         // Configuring the parameters      
         options.Background = new Rgba32(240, 240, 240);
-        options.SpriteSize = new Size(10, 10);
-        options.Size = new Size(256, 256);
+        options.SpriteSize = 10;
+        options.Size = 256;
         options.HashAlgorithm = HashProvider.SHA512;
     });
 }

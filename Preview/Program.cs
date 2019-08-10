@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using IdenticonSharp;
 using SixLabors.Fonts;
@@ -19,13 +20,15 @@ namespace Preview
             string[] values = { "Microsoft", "GitHub", "Visual Studio", "IdenticonSharp", "Roslyn", "C#", "F#", "VB" };
 
             var provider = IdenticonManager.Create<GitHubIdenticonOptions>(options => {
-                options.Size = new Size(128, 128);
+                options.Size = 128;
             });
 
             var images = values.Select(x => Sign(provider.Create(x), x));
             var union = Unite(images);
-            union.Save(args.FirstOrDefault() ?? "union.png");
+            union.Save(args.FirstOrDefault() ?? GetDefaultFilename());
         }
+
+        private static string GetDefaultFilename() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "union.png");
 
         private static Image Sign(Image image, string text, Font font) => Sign(image, text, font, Rgba32.White, new Rgba32(120, 120, 120));
         private static Image Sign(Image image, string text) => Sign(image, text, SystemFonts.CreateFont("Segoe UI", (int)(image.Height * 0.11f)), Rgba32.White, new Rgba32(120, 120, 120));

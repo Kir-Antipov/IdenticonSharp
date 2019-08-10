@@ -1,8 +1,9 @@
 ﻿using System;
+using KE.IdenticonSharp.Compatibility;
+
 #if NETFRAMEWORK
 using System.Drawing;
 #else
-using SixLabors.Primitives;
 using Color = SixLabors.ImageSharp.PixelFormats.Rgba32;
 #endif
 
@@ -10,43 +11,38 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
 {
     public class GitHubIdenticonOptions : IIdenticonOptions
     {
-#if NETFRAMEWORK
-        public Color Background { get; set; } = Color.FromArgb(240, 240, 240);
-#else
-        public Color Background { get; set; } = new Color(240, 240, 240);
-#endif
+        public Color Background { get; set; } = ColorHelper.FromRgb(240, 240, 240);
 
-        public Size Size
+        public int Size
         {
-            get => new Size(_spriteSize.Width * _factor + 2 * _offset, _spriteSize.Height * _factor + 2 * _offset);
+            get => _spriteSize * _factor + 2 * _offset;
             set
             {
-                if (value.Width < 1 || value.Height < 1)
-                    throw new ArgumentException("Width and height must be greater than 0", nameof(value));
+                if (value < 1)
+                    throw new ArgumentException("Size must be greater than 0", nameof(value));
                 
                 float offsetFactor = 23f / 256f;
-                Offset = (int)Math.Round((value.Width + value.Height) / 2f * offsetFactor, MidpointRounding.AwayFromZero);
+                Offset = (int)Math.Round(value * offsetFactor, MidpointRounding.AwayFromZero);
 
-                float factorX = (value.Width - 2f * Offset) / SpriteSize.Width;
-                float factorY = (value.Height - 2f * Offset) / SpriteSize.Height;
-                Factor = (int)Math.Round((factorX + factorY) / 2f, MidpointRounding.AwayFromZero);
+                float factor = (value - 2f * Offset) / SpriteSize;
+                Factor = (int)Math.Round(factor, MidpointRounding.AwayFromZero);
 
-                int dif = value.Width - Size.Width;
+                int dif = value - Size;
                 Offset += dif / 2;
             }
         }
 
-        public Size SpriteSize
+        public int SpriteSize
         {
             get => _spriteSize;
             set
             {
-                if (value.Width < 1 || value.Height < 1)
-                    throw new ArgumentException("Width and height must be greater than 0", nameof(value));
+                if (value < 1)
+                    throw new ArgumentException("Size must be greater than 0", nameof(value));
                 _spriteSize = value;
             }
         }
-        private Size _spriteSize = new Size(5, 5);
+        private int _spriteSize = 5;
 
         public int Factor
         {

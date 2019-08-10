@@ -4,7 +4,7 @@
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0;</TargetFrameworks>
     <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <LangVersion>7.3</LangVersion>
 
     <RootNamespace>KE.IdenticonSharp</RootNamespace>
@@ -18,9 +18,9 @@
     <PackageIconUrl>https://raw.githubusercontent.com/Kir-Antipov/IdenticonSharp/master/media/logo-64r.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/Kir-Antipov/IdenticonSharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Kir-Antipov/IdenticonSharp</RepositoryUrl>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0</FileVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     
   </PropertyGroup>

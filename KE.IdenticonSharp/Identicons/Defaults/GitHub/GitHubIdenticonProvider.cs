@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
+using IdenticonSharp.Svg;
 using IdenticonSharp.Helpers;
 using System.Collections.Generic;
-using IdenticonSharp.Svg;
+using KE.IdenticonSharp.Compatibility;
 
 #if NETFRAMEWORK
 using System.Drawing;
@@ -23,17 +24,17 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
         public GitHubIdenticonOptions Options { get; } = new GitHubIdenticonOptions();
         #endregion
 
-        private T CreateFromBytes<T>(byte[] input, Func<Size, bool[,], int, int, Color, Color, T> mapper)
+        private T CreateFromBytes<T>(byte[] input, Func<bool[,], int, int, Color, Color, T> mapper)
         {
             byte[] hash = Options.HashAlgorithm.ComputeHash(input);
             if ((hash?.Length ?? 0) < 1)
                 throw new FormatException("The hash algorithm worked unexpectedly");
 
-            Size size = Options.SpriteSize;
-            bool[,] sprite = new bool[size.Height, size.Width];
+            int size = Options.SpriteSize;
+            bool[,] sprite = new bool[size, size];
             FillSpriteWithHash(sprite, hash);
 
-            return mapper(size, sprite, Options.Factor, Options.Offset, Options.Background, ComputeForeground(hash));
+            return mapper(sprite, Options.Factor, Options.Offset, Options.Background, ComputeForeground(hash));
         }
 
         protected override Image CreateFromBytes(byte[] input) => CreateFromBytes(input, FillBitmap);
@@ -64,34 +65,12 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
             return FromHSL(h, 65 - s, 75 - l);
         }
 
-#if NETFRAMEWORK
-        protected virtual Bitmap FillBitmap(Size size, bool[,] sprite, int factor, int offset, Color background, Color foreground)
+        protected virtual Bitmap FillBitmap(bool[,] sprite, int factor, int offset, Color background, Color foreground)
         {
-            Bitmap img = new Bitmap(size.Width * factor + offset * 2, size.Height * factor + offset * 2);
-
             int height = sprite.GetLength(0);
             int width = sprite.GetLength(1);
 
-            Brush back = new SolidBrush(background);
-            Brush fore = new SolidBrush(foreground);
-            using (Graphics g = Graphics.FromImage(img))
-            {
-                g.FillRectangle(back, 0, 0, img.Width, img.Height);
-                for (int y = 0; y < height; ++y)
-                    for (int x = 0; x < width; ++x)
-                        if (sprite[y, x])
-                            g.FillRectangle(fore, offset + x * factor, offset + y * factor, factor, factor);
-            }
-
-            return img;
-        }
-#else
-        protected virtual Bitmap FillBitmap(Size size, bool[,] sprite, int factor, int offset, Color background, Color foreground)
-        {
-            Bitmap img = new Bitmap(size.Width * factor + offset * 2, size.Height * factor + offset * 2);
-
-            int height = sprite.GetLength(0);
-            int width = sprite.GetLength(1);
+            Bitmap img = new Bitmap(width * factor + offset * 2, height * factor + offset * 2);
 
             img.Mutate(context =>
             {
@@ -104,7 +83,6 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
 
             return img;
         }
-#endif
 
         private static Color FromHSL(double h, double s, double l)
         {
@@ -136,14 +114,11 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
                     vals = new[] { 0.0, 0.0, 0.0 };
                     break;
             }
-#if NETFRAMEWORK
-            return Color.FromArgb((byte)Math.Round((vals[0] + m) * 255), (byte)Math.Round((vals[1] + m) * 255), (byte)Math.Round((vals[2] + m) * 255));
-#else
-            return new Color((byte)Math.Round((vals[0] + m) * 255), (byte)Math.Round((vals[1] + m) * 255), (byte)Math.Round((vals[2] + m) * 255));
-#endif
+
+            return ColorHelper.FromRgb(Math.Round((vals[0] + m) * 255), Math.Round((vals[1] + m) * 255), Math.Round((vals[2] + m) * 255));
         }
 
-        protected virtual SvgBuilder FillSvg(Size size, bool[,] sprite, int factor, int offset, Color background, Color foreground)
+        protected virtual SvgBuilder FillSvg(bool[,] sprite, int factor, int offset, Color background, Color foreground)
         {
             int height = sprite.GetLength(0);
             int width = sprite.GetLength(1);

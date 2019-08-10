@@ -1,4 +1,4 @@
-# IdenticonSharp
+# IdenticonSharp ![Core NuGet][core-badge] ![AspNetCore NuGet][asp-badge]
 
 Cross-platform extendable library that allows you to create a variety of identicons without any efforts
 
@@ -160,3 +160,6 @@ Now you can easily use the following helpers:
 
  [core-nuget]: https://www.nuget.org/packages/KE.IdenticonSharp/ 
  [asp-nuget]: https://www.nuget.org/packages/KE.IdenticonSharp.AspNetCore/
+
+ [core-badge]: https://img.shields.io/nuget/v/KE.IdenticonSharp
+ [asp-badge]: https://img.shields.io/nuget/v/KE.IdenticonSharp.AspNetCore

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45;netstandard2.0;</TargetFrameworks>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>7.3</LangVersion>
+
+    <RootNamespace>KE.IdenticonSharp</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Kir_Antipov</Authors>
+    <Description>
+      Cross-platform extendable library that allows you to create a variety of identicons without any efforts
+    </Description>
+    <Copyright>Kir_Antipov © 2019 - DateTime.Now.Year</Copyright>
+    <PackageTags>Identicon Image Drawing</PackageTags>
+    <PackageIconUrl>https://raw.githubusercontent.com/Kir-Antipov/IdenticonSharp/master/media/logo-64r.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/Kir-Antipov/IdenticonSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Kir-Antipov/IdenticonSharp</RepositoryUrl>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <PackageLicenseUrl>MIT</PackageLicenseUrl>
+    
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="SixLabors.ImageSharp.Drawing">
+      <Version>1.0.0-beta0006</Version>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

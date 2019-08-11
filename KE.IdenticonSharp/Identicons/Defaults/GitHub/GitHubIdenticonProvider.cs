@@ -62,7 +62,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
             double s = lastBytes[2].Map(0, 255, 0, 20);
             double l = lastBytes[3].Map(0, 255, 0, 20);
 
-            return FromHSL(h, 65 - s, 75 - l);
+            return ColorHelper.FromHsl(h, 65 - s, 75 - l);
         }
 
         protected virtual Bitmap FillBitmap(bool[,] sprite, int factor, int offset, Color background, Color foreground)
@@ -82,40 +82,6 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
             });
 
             return img;
-        }
-
-        private static Color FromHSL(double h, double s, double l)
-        {
-            double c = (1 - Math.Abs(2 * l - 1)) * s;
-            double x = c * (1 - Math.Abs(h / 60.0 % 2 - 1));
-            double m = l - c / 2;
-            double[] vals;
-            switch ((int)(h / 60) % 6)
-            {
-                case 0:
-                    vals = new[] { c, x, 0 };
-                    break;
-                case 1:
-                    vals = new[] { x, c, 0 };
-                    break;
-                case 2:
-                    vals = new[] { 0, c, x };
-                    break;
-                case 3:
-                    vals = new[] { 0, x, c };
-                    break;
-                case 4:
-                    vals = new[] { x, 0, c };
-                    break;
-                case 5:
-                    vals = new[] { c, 0, x };
-                    break;
-                default:
-                    vals = new[] { 0.0, 0.0, 0.0 };
-                    break;
-            }
-
-            return ColorHelper.FromRgb(Math.Round((vals[0] + m) * 255), Math.Round((vals[1] + m) * 255), Math.Round((vals[2] + m) * 255));
         }
 
         protected virtual SvgBuilder FillSvg(bool[,] sprite, int factor, int offset, Color background, Color foreground)

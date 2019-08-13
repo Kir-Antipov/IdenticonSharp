@@ -5,6 +5,7 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 #else
+using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Png;
 using Image = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>;
 #endif
@@ -19,6 +20,12 @@ namespace IdenticonSharp.Helpers
             using (Bitmap bit = new Bitmap(image))
                 bit.Save(stream, ImageFormat.Png);
         }
+
+        public static Image Resize(this Image image, int width, int height)
+        {
+            using (image)
+                return new Bitmap(image, new Size(width, height));
+        }
 #else
         public static void Save(this Image image, string path)
         {
@@ -27,6 +34,12 @@ namespace IdenticonSharp.Helpers
         }
 
         public static void Save(this Image image, Stream stream) => image.Save(stream, new PngEncoder());
+
+        public static Image Resize(this Image image, int width, int height)
+        {
+            image.Mutate(context => context.Resize(width, height));
+            return image;
+        }
 #endif
 
         public static byte[] GetBytes(this Image image)

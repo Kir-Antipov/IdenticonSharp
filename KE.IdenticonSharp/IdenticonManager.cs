@@ -11,27 +11,30 @@ namespace IdenticonSharp
     public static class IdenticonManager
     {
         #region Var
-        private static readonly Dictionary<Type, Func<IIdenticonProvider>> ProvidersByType;
-        private static readonly Dictionary<string, Func<IIdenticonProvider>> ProvidersByName;
+        public static IIdenticonProvider Default { get; private set; }
 
         private static readonly string[] ProviderNamingParts = {
             "provider",
             "identicon",
-            "gravatar",
             "avatar",
             "options"
-        }; 
+        };
 
-        public static IIdenticonProvider Default { get; private set; }
+        private static readonly Dictionary<Type, Func<IIdenticonProvider>> ProvidersByType;
+        private static readonly Dictionary<string, Func<IIdenticonProvider>> ProvidersByName;
 
-        private static bool Configured = false;
-        private static readonly object _sync = new object();
+        private static readonly Dictionary<string, bool> ConfiguredInstances;
+        private static readonly Dictionary<Type, IIdenticonProvider> InstancesByType;
+        private static readonly Dictionary<string, IIdenticonProvider> InstancesByName;
         #endregion
 
         #region Init
         static IdenticonManager()
         {
             Default = new GitHubIdenticonProvider();
+            InstancesByType = new Dictionary<Type, IIdenticonProvider>();
+            InstancesByName = new Dictionary<string, IIdenticonProvider>();
+            ConfiguredInstances = new Dictionary<string, bool>();
             ProvidersByType = new Dictionary<Type, Func<IIdenticonProvider>>();
             ProvidersByName = new Dictionary<string, Func<IIdenticonProvider>>();
 
@@ -46,22 +49,15 @@ namespace IdenticonSharp
 
             foreach (var providerInfo in providersInfo)
             {
+                string name = ClearProviderName(providerInfo.Provider.Name);
                 Func<IIdenticonProvider> creator = Expression.Lambda<Func<IIdenticonProvider>>(Expression.New(providerInfo.Constructor)).Compile();
-                ProvidersByType[providerInfo.Provider] = creator;
-                ProvidersByName[ClearProviderName(providerInfo.Provider.Name)] = creator;
+                ProvidersByName[name] = ProvidersByType[providerInfo.Provider] = creator;
+                InstancesByName[name] = InstancesByType[providerInfo.Provider] = providerInfo.Provider == typeof(GitHubIdenticonProvider) ? Default : creator();
             }
         }
         #endregion
 
-        #region Functions
-        private static string ClearProviderName(string name)
-        {
-            name = name.ToLower();
-            foreach (string part in ProviderNamingParts)
-                name = name.Replace(part, string.Empty);
-            return name;
-        }
-
+        #region Create
         public static IIdenticonProvider Create(string name)
         {
             if (ProvidersByName.TryGetValue(ClearProviderName(name), out var creator))
@@ -103,7 +99,60 @@ namespace IdenticonSharp
             }
             return default;
         }
+        #endregion
 
+        #region Get
+        public static TProvider Get<TProvider>() where TProvider : IIdenticonProvider => (TProvider)Get(typeof(TProvider));
+
+        public static IIdenticonProvider Get(Type providerType)
+        {
+            if (InstancesByType.TryGetValue(providerType, out var provider))
+                return provider;
+            return null;
+        }
+
+        public static IIdenticonProvider Get(string providerName)
+        {
+            if (InstancesByName.TryGetValue(providerName, out var provider))
+                return provider;
+            return null;
+        }
+        #endregion
+
+        #region Configure
+        public static void Configure<TOptions>(string providerName, Action<TOptions> configurator) where TOptions : IIdenticonOptions
+        {
+            IIdenticonProvider<TOptions> provider = Create(providerName) as IIdenticonProvider<TOptions>;
+            Configure(provider, providerName, configurator);
+        }
+
+        public static void Configure<TOptions>(Action<TOptions> configurator) where TOptions : IIdenticonOptions =>
+            Configure(typeof(TOptions).Name, configurator);
+
+        public static void Configure<TProvider, UOptions>(Action<UOptions> configurator) where TProvider : IIdenticonProvider<UOptions> where UOptions : IIdenticonOptions
+        {
+            IIdenticonProvider<UOptions> provider = (IIdenticonProvider<UOptions>)Get<TProvider>();
+            Configure(provider, typeof(TProvider).Name, configurator);
+        }
+
+        private static void Configure<TOptions>(IIdenticonProvider<TOptions> provider, string name, Action<TOptions> configurator) where TOptions : IIdenticonOptions
+        {
+            if (provider is null)
+                throw new ArgumentNullException(nameof(provider));
+
+            if (configurator is null)
+                throw new ArgumentNullException(nameof(configurator));
+
+            if (ConfiguredInstances.TryGetValue(name, out bool configured) ? configured : false)
+                throw new InvalidOperationException("This provider has already been configured");
+
+            configurator(provider.Options);
+
+            ConfiguredInstances[name] = true;
+        }
+        #endregion
+
+        #region ConfigureDefault
         public static void ConfigureDefault<TProvider>() where TProvider : IIdenticonProvider =>
             ConfigureDefault(Create<TProvider>(), typeof(TProvider).Name);
 
@@ -128,15 +177,25 @@ namespace IdenticonSharp
 
         private static void ConfigureDefault(IIdenticonProvider provider, string name)
         {
-            lock (_sync)
-            {
-                if (Configured)
-                    throw new InvalidOperationException("The default provider has already been configured");
+            if (ConfiguredInstances.TryGetValue(name, out bool configured) ? configured : false)
+                throw new InvalidOperationException("Default provider has been already configured");
 
-                Default = provider ?? throw new TypeLoadException(name);
+            Default = provider ?? throw new TypeLoadException(name);
 
-                Configured = true;
-            }
+            ConfiguredInstances[name] = true;
+        }
+        #endregion
+
+        #region Other
+        private static string ClearProviderName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return string.Empty;
+
+            name = name.ToLower();
+            foreach (string part in ProviderNamingParts)
+                name = name.Replace(part, string.Empty);
+            return name;
         }
         #endregion
     }

@@ -15,7 +15,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
 
         public int Size
         {
-            get => _spriteSize * _factor + 2 * _offset;
+            get => _requestedSize;
             set
             {
                 if (value < 1)
@@ -27,10 +27,15 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
                 float factor = (value - 2f * Offset) / SpriteSize;
                 Factor = (int)Math.Round(factor, MidpointRounding.AwayFromZero);
 
-                int dif = value - Size;
+                int dif = value - RealSize;
                 Offset += dif / 2;
+
+                _requestedSize = value;
             }
         }
+        private int _requestedSize = 5 * 42 + 2 * 23;
+
+        public int RealSize => _spriteSize * _factor + 2 * _offset;
 
         public int SpriteSize
         {
@@ -49,7 +54,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
             get => _factor;
             set
             {
-                if (_factor < 1)
+                if (value < 1)
                     throw new ArgumentException("Factor must be greater than 0", nameof(value));
                 _factor = value;
             }
@@ -61,7 +66,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
             get => _offset;
             set
             {
-                if (_offset < 1)
+                if (value < 1)
                     throw new ArgumentException("Factor must be greater than 0", nameof(value));
                 _offset = value;
             }

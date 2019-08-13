@@ -24,7 +24,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
         public GitHubIdenticonOptions Options { get; } = new GitHubIdenticonOptions();
         #endregion
 
-        private T CreateFromBytes<T>(byte[] input, Func<bool[,], int, int, Color, Color, T> mapper)
+        private T CreateFromBytes<T>(byte[] input, Func<bool[,], Color, Color, T> mapper)
         {
             byte[] hash = Options.HashAlgorithm.ComputeHash(input);
             if ((hash?.Length ?? 0) < 1)
@@ -34,7 +34,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
             bool[,] sprite = new bool[size, size];
             FillSpriteWithHash(sprite, hash);
 
-            return mapper(sprite, Options.Factor, Options.Offset, Options.Background, ComputeForeground(hash));
+            return mapper(sprite, Options.Background, ComputeForeground(hash));
         }
 
         protected override Image CreateFromBytes(byte[] input) => CreateFromBytes(input, FillBitmap);
@@ -42,16 +42,15 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
 
         protected virtual void FillSpriteWithHash(bool[,] sprite, byte[] hash)
         {
-            int height = sprite.GetLength(0);
-            int width = sprite.GetLength(1);
-            int half = (int)Math.Round(width / 2.0, MidpointRounding.AwayFromZero) - 1;
+            int side = sprite.GetLength(0);
+            int half = (int)Math.Round(side / 2.0, MidpointRounding.AwayFromZero) - 1;
 
             IEnumerator<bool> flags = hash.Loop().Select(x => (x & 1) == 0).GetEnumerator();
             flags.MoveNext();
 
             for (int x = half; x >= 0; --x)
-                for (int y = 0; y < height; ++y, flags.MoveNext())
-                    sprite[y, x] = sprite[y, width - x - 1] = flags.Current;
+                for (int y = 0; y < side; ++y, flags.MoveNext())
+                    sprite[y, x] = sprite[y, side - x - 1] = flags.Current;
         }
 
         protected virtual Color ComputeForeground(byte[] hash)
@@ -65,51 +64,51 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
             return ColorHelper.FromHsl(h, 65 - s, 75 - l);
         }
 
-        protected virtual Bitmap FillBitmap(bool[,] sprite, int factor, int offset, Color background, Color foreground)
+        protected virtual Bitmap FillBitmap(bool[,] sprite, Color background, Color foreground)
         {
-            int height = sprite.GetLength(0);
-            int width = sprite.GetLength(1);
+            int side = sprite.GetLength(0);
+            int imageSide = side * Options.Factor + Options.Offset * 2;
 
-            Bitmap img = new Bitmap(width * factor + offset * 2, height * factor + offset * 2);
-
+            Bitmap img = new Bitmap(imageSide, imageSide);
             img.Mutate(context =>
             {
                 context.Fill(background);
-                for (int y = 0; y < height; ++y)
-                    for (int x = 0; x < width; ++x)
+                for (int y = 0; y < side; ++y)
+                    for (int x = 0; x < side; ++x)
                         if (sprite[y, x])
-                            context.Fill(foreground, new RectangleF(offset + x * factor, offset + y * factor, factor, factor));
+                            context.Fill(foreground, new RectangleF(Options.Offset + x * Options.Factor, Options.Offset + y * Options.Factor, Options.Factor, Options.Factor));
             });
+            if (imageSide != Options.Size)
+                img.Resize(Options.Size, Options.Size);
 
             return img;
         }
 
-        protected virtual SvgBuilder FillSvg(bool[,] sprite, int factor, int offset, Color background, Color foreground)
+        protected virtual SvgBuilder FillSvg(bool[,] sprite, Color background, Color foreground)
         {
-            int height = sprite.GetLength(0);
-            int width = sprite.GetLength(1);
+            int side = sprite.GetLength(0);
+            decimal offset = Options.Offset / (decimal)Options.Factor;
+            decimal fullSide = side + 2m * offset;
 
-            int fullWidth = width * factor + 2 * offset;
-            int fullHeight = height * factor + 2 * offset;
+            SvgBuilder svg = new SvgBuilder()
+                .SetViewBox(0, 0, fullSide, fullSide)
+                .Append(new SvgRect {
+                    PercentageWidth = 100,
+                    PercentageHeight = 100,
+                    Color = background
+                });
 
-            double dOffsetX = offset * 100.0 / fullWidth;
-            double dOffsetY = offset * 100.0 / fullHeight;
-            double dFactorX = factor * 100.0 / fullWidth;
-            double dFactorY = factor * 100.0 / fullHeight;
-
-            SvgBuilder svg = new SvgBuilder { Color = background };
-            for (int y = 0; y < height; ++y)
-                for (int x = 0; x < width; ++x)
+            SvgPathBuilder path = new SvgPathBuilder { Color = foreground };
+            for (int y = 0; y < side; ++y)
+                for (int x = 0; x < side; ++x)
                     if (sprite[y, x])
-                        svg.Append(new SvgRect {
-                            PercentageX = dOffsetX + dFactorX * x,
-                            PercentageY = dOffsetY + dFactorY * y,
-                            PercentageWidth = dFactorX,
-                            PercentageHeight = dFactorY,
-                            Color = foreground
-                        });
+                        path.AppendPoint(x + offset, y + offset)
+                            .AppendRelativeHorizontalLine(1)
+                            .AppendRelativeVerticalLine(1)
+                            .AppendRelativeHorizontalLine(-1)
+                            .AppendClosePath();
 
-            return svg;
+            return svg.Append(path);
         }
     }
 }

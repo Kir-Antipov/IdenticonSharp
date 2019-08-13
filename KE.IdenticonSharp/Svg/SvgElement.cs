@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Xml.Linq;
 using System.Globalization;
+using IdenticonSharp.Helpers;
 using System.Collections.Generic;
 
 #if NETFRAMEWORK
@@ -26,8 +27,8 @@ namespace IdenticonSharp.Svg
             set => SetStringAttribute("height", value);
         }
 
-        public virtual double PercentageWidth { set => Width = $"{value.ToString("F2").Replace(',', '.')}%"; }
-        public virtual double PercentageHeight { set => Height = $"{value.ToString("F2").Replace(',', '.')}%"; }
+        public virtual double PercentageWidth { set => Width = $"{value.ToNormalizedString("F2")}%"; }
+        public virtual double PercentageHeight { set => Height = $"{value.ToNormalizedString("F2")}%"; }
 
         public virtual int PixelWidth { set => Width = $"{value}px"; }
         public virtual int PixelHeight { set => Height = $"{value}px"; }
@@ -43,8 +44,8 @@ namespace IdenticonSharp.Svg
             set => SetStringAttribute("y", value);
         }
 
-        public virtual double PercentageX { set => X = $"{value.ToString("F2").Replace(',', '.')}%"; }
-        public virtual double PercentageY { set => Y = $"{value.ToString("F2").Replace(',', '.')}%"; }
+        public virtual double PercentageX { set => X = $"{value.ToNormalizedString("F2")}%"; }
+        public virtual double PercentageY { set => Y = $"{value.ToNormalizedString("F2")}%"; }
 
         public virtual int PixelX { set => X = $"{value}px"; }
         public virtual int PixelY { set => Y = $"{value}px"; }

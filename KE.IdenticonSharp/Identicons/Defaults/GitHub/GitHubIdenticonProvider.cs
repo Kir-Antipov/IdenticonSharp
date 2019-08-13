@@ -79,7 +79,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
                             context.Fill(foreground, new RectangleF(Options.Offset + x * Options.Factor, Options.Offset + y * Options.Factor, Options.Factor, Options.Factor));
             });
             if (imageSide != Options.Size)
-                img.Resize(Options.Size, Options.Size);
+                img = img.Resize(Options.Size, Options.Size);
 
             return img;
         }

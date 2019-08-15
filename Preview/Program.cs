@@ -8,7 +8,7 @@ using SixLabors.Primitives;
 using System.Collections.Generic;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.PixelFormats;
-using IdenticonSharp.Identicons.Defaults.GitHub;
+using IdenticonSharp.Identicons.Defaults.QR;
 using Image = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>;
 
 namespace Preview
@@ -19,8 +19,9 @@ namespace Preview
         {
             string[] values = { "Microsoft", "GitHub", "Visual Studio", "IdenticonSharp", "Roslyn", "C#", "F#", "VB" };
 
-            var provider = IdenticonManager.Create<GitHubIdenticonOptions>(options => {
-                options.Size = 128;
+            var provider = IdenticonManager.Create<QRIdenticonOptions>(options => {
+                options.Border = 1;
+                options.Scale = 6;
             });
 
             var images = values.Select(x => Sign(provider.Create(x), x));

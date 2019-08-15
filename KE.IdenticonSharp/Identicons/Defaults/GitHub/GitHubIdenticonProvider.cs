@@ -3,7 +3,7 @@ using System.Linq;
 using IdenticonSharp.Svg;
 using IdenticonSharp.Helpers;
 using System.Collections.Generic;
-using KE.IdenticonSharp.Compatibility;
+using IdenticonSharp.Compatibility;
 
 #if NETFRAMEWORK
 using System.Drawing;
@@ -67,7 +67,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
         protected virtual Bitmap FillBitmap(bool[,] sprite, Color background, Color foreground)
         {
             int side = sprite.GetLength(0);
-            int imageSide = side * Options.Factor + Options.Offset * 2;
+            int imageSide = side * Options.Scale + Options.Border * 2;
 
             Bitmap img = new Bitmap(imageSide, imageSide);
             img.Mutate(context =>
@@ -76,7 +76,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
                 for (int y = 0; y < side; ++y)
                     for (int x = 0; x < side; ++x)
                         if (sprite[y, x])
-                            context.Fill(foreground, new RectangleF(Options.Offset + x * Options.Factor, Options.Offset + y * Options.Factor, Options.Factor, Options.Factor));
+                            context.Fill(foreground, new RectangleF(Options.Border + x * Options.Scale, Options.Border + y * Options.Scale, Options.Scale, Options.Scale));
             });
             if (imageSide != Options.Size)
                 img = img.Resize(Options.Size, Options.Size);
@@ -87,7 +87,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
         protected virtual SvgBuilder FillSvg(bool[,] sprite, Color background, Color foreground)
         {
             int side = sprite.GetLength(0);
-            decimal offset = Options.Offset / (decimal)Options.Factor;
+            decimal offset = Options.Border / (decimal)Options.Scale;
             decimal fullSide = side + 2m * offset;
 
             SvgBuilder svg = new SvgBuilder()

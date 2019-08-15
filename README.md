@@ -19,6 +19,18 @@ So if you have an idea to implement a new (or existing one) identicon - you're w
 
 ![GitHub Identicons](media/github.png)
 
+ - `Provider`: [`IdenticonSharp.Identicons.Defaults.GitHub.GitHubIdenticonProvider`](https://github.com/Kir-Antipov/IdenticonSharp/blob/master/KE.IdenticonSharp/Identicons/Defaults/GitHub/GitHubIdenticonProvider.cs)
+ - `Options`:  [`IdenticonSharp.Identicons.Defaults.GitHub.GitHubIdenticonOptions`](https://github.com/Kir-Antipov/IdenticonSharp/blob/master/KE.IdenticonSharp/Identicons/Defaults/GitHub/GitHubIdenticonOptions.cs)
+
+### [QR code](https://www.qrcode.com/)
+
+![QR code](media/qr.png)
+
+Yes, I know that QR code is not essentially an identicon... but why not?
+
+ - `Provider`: [`IdenticonSharp.Identicons.Defaults.QR.QRIdenticonProvider`](https://github.com/Kir-Antipov/IdenticonSharp/blob/master/KE.IdenticonSharp/Identicons/Defaults/QR/QRIdenticonProvider.cs)
+ - `Options`:  [`IdenticonSharp.Identicons.Defaults.QR.QRIdenticonOptions`](https://github.com/Kir-Antipov/IdenticonSharp/blob/master/KE.IdenticonSharp/Identicons/Defaults/QR/QRIdenticonOptions.cs)
+
 ------
 
 ## Usage

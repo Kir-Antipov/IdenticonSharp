@@ -1,7 +1,8 @@
 ﻿#if NETFRAMEWORK
+using System;
 using System.Drawing;
 
-namespace KE.IdenticonSharp.Compatibility
+namespace IdenticonSharp.Compatibility
 {
     internal class GraphicsWrapper
     {
@@ -25,6 +26,8 @@ namespace KE.IdenticonSharp.Compatibility
             using (Brush brush = new SolidBrush(color))
                 Graphics.FillRectangle(brush, rectangle);
         }
+
+        public void DrawImage(Image image, Rectangle rectangle) => Graphics.DrawImage(image, rectangle);
     }
 }
 #endif

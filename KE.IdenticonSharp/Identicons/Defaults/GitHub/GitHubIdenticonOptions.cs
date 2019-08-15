@@ -1,5 +1,5 @@
 ﻿using System;
-using KE.IdenticonSharp.Compatibility;
+using IdenticonSharp.Compatibility;
 
 #if NETFRAMEWORK
 using System.Drawing;
@@ -22,20 +22,20 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
                     throw new ArgumentException("Size must be greater than 0", nameof(value));
                 
                 float offsetFactor = 23f / 256f;
-                Offset = (int)Math.Round(value * offsetFactor, MidpointRounding.AwayFromZero);
+                Border = (int)Math.Round(value * offsetFactor, MidpointRounding.AwayFromZero);
 
-                float factor = (value - 2f * Offset) / SpriteSize;
-                Factor = (int)Math.Round(factor, MidpointRounding.AwayFromZero);
+                float factor = (value - 2f * Border) / SpriteSize;
+                Scale = (int)Math.Round(factor, MidpointRounding.AwayFromZero);
 
                 int dif = value - RealSize;
-                Offset += dif / 2;
+                Border += dif / 2;
 
                 _requestedSize = value;
             }
         }
         private int _requestedSize = 5 * 42 + 2 * 23;
 
-        public int RealSize => _spriteSize * _factor + 2 * _offset;
+        public int RealSize => _spriteSize * _scale + 2 * _border;
 
         public int SpriteSize
         {
@@ -49,29 +49,29 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
         }
         private int _spriteSize = 5;
 
-        public int Factor
+        public int Scale
         {
-            get => _factor;
+            get => _scale;
             set
             {
                 if (value < 1)
-                    throw new ArgumentException("Factor must be greater than 0", nameof(value));
-                _factor = value;
+                    throw new ArgumentException("Scale must be greater than 0", nameof(Scale));
+                _scale = value;
             }
         }
-        private int _factor = 42;
+        private int _scale = 42;
 
-        public int Offset
+        public int Border
         {
-            get => _offset;
+            get => _border;
             set
             {
                 if (value < 1)
-                    throw new ArgumentException("Factor must be greater than 0", nameof(value));
-                _offset = value;
+                    throw new ArgumentException("Border must be greater than 0", nameof(Border));
+                _border = value;
             }
         }
-        private int _offset = 23;
+        private int _border = 23;
 
         public IHashProvider HashAlgorithm
         {

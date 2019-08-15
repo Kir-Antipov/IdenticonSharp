@@ -6,7 +6,7 @@ using System.Drawing;
 using Color = SixLabors.ImageSharp.PixelFormats.Rgba32;
 #endif
 
-namespace KE.IdenticonSharp.Compatibility
+namespace IdenticonSharp.Compatibility
 {
     internal static class ColorHelper
     {

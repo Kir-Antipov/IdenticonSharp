@@ -21,7 +21,7 @@ namespace IdenticonSharp.Helpers
                 bit.Save(stream, ImageFormat.Png);
         }
 
-        public static Image Resize(this Image image, int width, int height)
+        public static Bitmap Resize(this Image image, int width, int height)
         {
             using (image)
                 return new Bitmap(image, new Size(width, height));

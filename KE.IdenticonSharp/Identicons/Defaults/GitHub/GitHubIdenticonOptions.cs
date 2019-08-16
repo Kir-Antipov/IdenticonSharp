@@ -76,7 +76,7 @@ namespace IdenticonSharp.Identicons.Defaults.GitHub
         public IHashProvider HashAlgorithm
         {
             get => _hashAlgorithm;
-            set => _hashAlgorithm = value ?? throw new ArgumentNullException(nameof(value));
+            set => _hashAlgorithm = value ?? throw new ArgumentNullException(nameof(HashAlgorithm));
         }
         private IHashProvider _hashAlgorithm = HashProvider.MD5;
     }

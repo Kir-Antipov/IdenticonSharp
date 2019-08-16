@@ -14,10 +14,24 @@ namespace IdenticonSharp.Compatibility
         public static Color FromRgb(byte r, byte g, byte b) => Color.FromArgb(r, g, b);
         public static Color FromRgb(int r, int g, int b) => Color.FromArgb((byte)r, (byte)g, (byte)b);
         public static Color FromRgb(double r, double g, double b) => Color.FromArgb((byte)r, (byte)g, (byte)b);
+
+        public static Color FromHex(int rgb) => FromHex((uint)(0xFF000000 | rgb));
+        public static Color FromHex(uint argb) => Color.FromArgb((int)argb);
 #else
         public static Color FromRgb(byte r, byte g, byte b) => new Color(r, g, b);
         public static Color FromRgb(int r, int g, int b) => new Color((byte)r, (byte)g, (byte)b);
         public static Color FromRgb(double r, double g, double b) => new Color((byte)r, (byte)g, (byte)b);
+
+        public static Color FromHex(int rgb) => FromHex((uint)(0xFF000000 | rgb));
+        public static Color FromHex(uint argb)
+        {
+            byte a = (byte)((argb & 0xFF000000) >> 24);
+            byte r = (byte)((argb & 0x00FF0000) >> 16);
+            byte g = (byte)((argb & 0x0000FF00) >> 8);
+            byte b = (byte)((argb & 0x000000FF));
+
+            return new Color(r, g, b, a);
+        }
 #endif
 
         public static Color FromHsl(double h, double s, double l)

@@ -24,12 +24,22 @@ So if you have an idea to implement a new (or existing one) identicon - you're w
 
 ### [QR code](https://www.qrcode.com/)
 
-![QR code](media/qr.png)
+![QR codes](media/qr.png)
 
 Yes, I know that QR code is not essentially an identicon... but why not?
 
  - `Provider`: [`IdenticonSharp.Identicons.Defaults.QR.QRIdenticonProvider`](https://github.com/Kir-Antipov/IdenticonSharp/blob/master/KE.IdenticonSharp/Identicons/Defaults/QR/QRIdenticonProvider.cs)
  - `Options`:  [`IdenticonSharp.Identicons.Defaults.QR.QRIdenticonOptions`](https://github.com/Kir-Antipov/IdenticonSharp/blob/master/KE.IdenticonSharp/Identicons/Defaults/QR/QRIdenticonOptions.cs)
+
+
+### Animal Identicon
+
+![Animal Identicons](media/animal.png)
+
+Identicons by `Google Docs`
+
+ - `Provider`: [`IdenticonSharp.Identicons.Defaults.Animal.AnimalIdenticonProvider`](https://github.com/Kir-Antipov/IdenticonSharp/blob/master/KE.IdenticonSharp/Identicons/Defaults/Animal/AnimalIdenticonProvider.cs)
+ - `Options`:  [`IdenticonSharp.Identicons.Defaults.Animal.AnimalIdenticonOptions`](https://github.com/Kir-Antipov/IdenticonSharp/blob/master/KE.IdenticonSharp/Identicons/Defaults/Animal/AnimalIdenticonOptions.cs)
 
 ------
 

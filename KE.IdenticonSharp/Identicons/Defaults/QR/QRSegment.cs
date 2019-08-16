@@ -141,18 +141,13 @@ namespace IdenticonSharp.Identicons.Defaults.QR
                 .OrderBy(x => x.Match.Index)
                 .ThenBy(x => x.Type)
                 .GetEnumerator();
-            suitable.MoveNext();
 
-            for (int i = 0; i < text.Length; suitable.MoveNext())
+            bool moving = suitable.MoveNext();
+            for (int i = 0; i < text.Length; moving = suitable.MoveNext())
             {
-                var current = suitable.Current;
-                if (current == null)
+                if (moving)
                 {
-                    yield return CreateByteSegment(Encoding.UTF8.GetBytes(chars, i, text.Length - i));
-                    i = text.Length;
-                }
-                else
-                {
+                    var current = suitable.Current;
                     if (i <= current.Match.Index)
                     {
                         if (i < current.Match.Index)
@@ -169,6 +164,11 @@ namespace IdenticonSharp.Identicons.Defaults.QR
                             i = current.Match.Index + current.Match.Length;
                         }
                     }
+                }
+                else
+                {
+                    yield return CreateByteSegment(Encoding.UTF8.GetBytes(chars, i, text.Length - i));
+                    i = text.Length;
                 }
             }
         }

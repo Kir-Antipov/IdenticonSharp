@@ -38,9 +38,9 @@ namespace IdenticonSharp
             ProvidersByType = new Dictionary<Type, Func<IIdenticonProvider>>();
             ProvidersByName = new Dictionary<string, Func<IIdenticonProvider>>();
 
-            string[] defaultAssemblies = { "System", "Microsoft", "netstandart", "mscorlib", "WindowsBase", "SixLabors" };
+            string[] defaultAssemblies = { "System", "Microsoft", "netstandard", "mscorlib", "WindowsBase", "SixLabors", "Newtonsoft" };
             var providersInfo = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(x => !defaultAssemblies.Any(x.GetName().Name.StartsWith))
+                .Where(x => !x.IsDynamic && !defaultAssemblies.Any(x.GetName().Name.StartsWith))
                 .SelectMany(x => x.GetExportedTypes())
                 .Where(typeof(IIdenticonProvider).IsAssignableFrom)
                 .Where(type => !type.IsAbstract)
@@ -113,7 +113,7 @@ namespace IdenticonSharp
 
         public static IIdenticonProvider Get(string providerName)
         {
-            if (InstancesByName.TryGetValue(providerName, out var provider))
+            if (InstancesByName.TryGetValue(ClearProviderName(providerName), out var provider))
                 return provider;
             return null;
         }
@@ -122,7 +122,7 @@ namespace IdenticonSharp
         #region Configure
         public static void Configure<TOptions>(string providerName, Action<TOptions> configurator) where TOptions : IIdenticonOptions
         {
-            IIdenticonProvider<TOptions> provider = Create(providerName) as IIdenticonProvider<TOptions>;
+            IIdenticonProvider<TOptions> provider = Get(providerName) as IIdenticonProvider<TOptions>;
             Configure(provider, providerName, configurator);
         }
 
@@ -131,7 +131,7 @@ namespace IdenticonSharp
 
         public static void Configure<TProvider, UOptions>(Action<UOptions> configurator) where TProvider : IIdenticonProvider<UOptions> where UOptions : IIdenticonOptions
         {
-            IIdenticonProvider<UOptions> provider = (IIdenticonProvider<UOptions>)Get<TProvider>();
+            IIdenticonProvider<UOptions> provider = Get<TProvider>();
             Configure(provider, typeof(TProvider).Name, configurator);
         }
 

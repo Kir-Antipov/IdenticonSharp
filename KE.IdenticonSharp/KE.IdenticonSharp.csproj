@@ -18,9 +18,9 @@
     <PackageIconUrl>https://raw.githubusercontent.com/Kir-Antipov/IdenticonSharp/master/media/logo-64r.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/Kir-Antipov/IdenticonSharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Kir-Antipov/IdenticonSharp</RepositoryUrl>
-    <Version>1.2.0</Version>
-    <AssemblyVersion>1.2.0</AssemblyVersion>
-    <FileVersion>1.2.0</FileVersion>
+    <Version>1.3.0</Version>
+    <AssemblyVersion>1.3.0</AssemblyVersion>
+    <FileVersion>1.3.0</FileVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     
   </PropertyGroup>

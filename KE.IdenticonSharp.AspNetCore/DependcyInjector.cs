@@ -1,5 +1,4 @@
 ﻿using System;
-using IdenticonSharp;
 using IdenticonSharp.Identicons;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,39 +6,31 @@ namespace KE.IdenticonSharp.AspNetCore
 {
     public static class DependcyInjector
     {
-        public static IServiceCollection AddIdenticonSharp(this IServiceCollection services)
+        public static IdenticonSharpBuilder AddIdenticonSharp(this IServiceCollection services) => new IdenticonSharpBuilder(services);
+
+        public static IdenticonSharpBuilder AddIdenticonSharp<TProvider, UOptions>(this IServiceCollection services, Action<UOptions> configurator) where TProvider : IIdenticonProvider<UOptions> where UOptions : IIdenticonOptions
         {
-            services.AddSingleton(IdenticonManager.Default);
-            return services;
-        }
-        public static IServiceCollection AddIdenticonSharp<TProvider, UOptions>(this IServiceCollection services, Action<UOptions> configurator) where TProvider : IIdenticonProvider<UOptions> where UOptions : IIdenticonOptions
-        {
-            IdenticonManager.ConfigureDefault<TProvider, UOptions>(configurator);
-            return services.AddIdenticonSharp();
+            return new IdenticonSharpBuilder(services).ConfigureDefault<TProvider, UOptions>(configurator);
         }
 
-        public static IServiceCollection AddIdenticonSharp<TOptions>(this IServiceCollection services, string providerName, Action<TOptions> configurator) where TOptions : IIdenticonOptions
+        public static IdenticonSharpBuilder AddIdenticonSharp<TOptions>(this IServiceCollection services, string providerName, Action<TOptions> configurator) where TOptions : IIdenticonOptions
         {
-            IdenticonManager.ConfigureDefault(providerName, configurator);
-            return services.AddIdenticonSharp();
+            return new IdenticonSharpBuilder(services).ConfigureDefault(providerName, configurator);
         }
 
-        public static IServiceCollection AddIdenticonSharp<TOptions>(this IServiceCollection services, Action<TOptions> configurator) where TOptions : IIdenticonOptions
+        public static IdenticonSharpBuilder AddIdenticonSharp<TOptions>(this IServiceCollection services, Action<TOptions> configurator) where TOptions : IIdenticonOptions
         {
-            IdenticonManager.ConfigureDefault(configurator);
-            return services.AddIdenticonSharp();
+            return new IdenticonSharpBuilder(services).ConfigureDefault(configurator);
         }
 
-        public static IServiceCollection AddIdenticonSharp<TProvider>(this IServiceCollection services) where TProvider : IIdenticonProvider
+        public static IdenticonSharpBuilder AddIdenticonSharp<TProvider>(this IServiceCollection services) where TProvider : IIdenticonProvider
         {
-            IdenticonManager.ConfigureDefault<TProvider>();
-            return services.AddIdenticonSharp();
+            return new IdenticonSharpBuilder(services).ConfigureDefault<TProvider>();
         }
 
-        public static IServiceCollection AddIdenticonSharp(this IServiceCollection services, string providerName)
+        public static IdenticonSharpBuilder AddIdenticonSharp(this IServiceCollection services, string providerName)
         {
-            IdenticonManager.ConfigureDefault(providerName);
-            return services.AddIdenticonSharp();
+            return new IdenticonSharpBuilder(services).ConfigureDefault(providerName);
         }
     }
 }

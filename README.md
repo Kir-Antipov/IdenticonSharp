@@ -99,13 +99,24 @@ To register `IdenticonSharp` as a service, just edit the `ConfigureServices` met
 public void ConfigureServices(IServiceCollection services)
 {
     ...
-    services.AddIdenticonSharp<GitHubIdenticonProvider, GitHubIdenticonOptions>(options => {
-        // Configuring the parameters      
-        options.Background = new Rgba32(240, 240, 240);
-        options.SpriteSize = 10;
-        options.Size = 256;
-        options.HashAlgorithm = HashProvider.SHA512;
-    });
+    services
+        .AddIdenticonSharp<GitHubIdenticonProvider, GitHubIdenticonOptions>(options =>
+        {
+            // Configuring parameters of default IdenticonProvider 
+            options.SpriteSize = 10;
+            options.Size = 256;
+            options.HashAlgorithm = HashProvider.SHA512;
+        })
+        .Configure<QRIdenticonOptions>("qr", options => 
+        {
+            // Configuring parameters of QRIdenticonProvider's instance 
+            options.Background = new Rgba32(0, 0, 255);
+            options.Foreground = new Rgba32(0, 255, 0);
+            options.Border = 40;
+            options.Scale = 10;
+            options.CorrectionLevel = CorrectionLevel.High;
+            options.CenterImage = Image.Load(path);
+        });
 }
 ```
 
@@ -117,6 +128,8 @@ public void ConfigureServices(IServiceCollection services)
     ...
     services.AddIdenticonSharp<GitHubIdenticonOptions>(options => {
         ...
+    }).Configure<QRIdenticonOptions>(options => {
+        ...
     });
 }
 ```
@@ -127,12 +140,17 @@ After that you can enjoy all the charms of *dependency injection* in `ASP.NET Co
 public class HomeController : Controller
 {
     private readonly IIdenticonProvider IdenticonProvider;
+    private readonly QRIdenticonProvider QRProvider;
 
-    // Framework will pass the configured identicon generator 
+    // Framework will pass the configured identicon generators 
     // to the constructor of your controller
-    public HomeController(IIdenticonProvider identiconProvider)
+    public HomeController(IIdenticonProvider identiconProvider, QRIdenticonProvider qrProvider)
     {
+        // Default IdenticonProvider
         IdenticonProvider = identiconProvider;
+
+        // Configured QRIdenticonProvider's instance 
+        QRProvider = qrProvider;
     }
 }
 ```
@@ -152,16 +170,39 @@ Now you can easily use the following helpers:
 ```html
 @{
     string userEmail = ...;
+    string userSecret = ...;
 }
 
-<!-- Generates an img tag containing an identicon -->
+<!-- Generates <img> containing an identicon (by IdenticonManager.Default) -->
 <identicon width="256px" height="256px" value="@userEmail">
     
-<!-- Generates an svg tag containing an identicon -->
-<identicon width="256px" height="256px" svg value="@userEmail">
+<!-- Generates <svg> containing an identicon (by IdenticonManager.Default) -->
+<identicon width="256px" height="256px" value="@userEmail" svg>
     
-<!-- Generates an img tag containing a gravatar -->
+<!-- Generates <img> containing a gravatar -->
 <gravatar width="256px" height="256px" value="@userEmail">
+
+<!-- Generates <img> containing a QR code (by configured QRIdenticonProvider instance) -->
+<qr width="256px" height="256px" value="@userEmail">
+
+<!-- Generates <svg> containing a QR code (by configured QRIdenticonProvider instance) -->
+<qr width="256px" height="256px" value="@userEmail" svg>
+
+<!-- Generates <img> containing a QR code for otpauth (by configured QRIdenticonProvider instance) -->
+<!-- (Can be used with Google Authenticator, for example) -->
+<!-- https://github.com/google/google-authenticator/wiki/Key-Uri-Format -->
+<!-- If encode-secret attribute was not specified, the secret will be encoded only if it contains non-Base32 characters -->
+<!-- If encode-secret="true", the secret will be Base32-encoded -->
+<!-- If encode-secret="false", the secret will not be Base32-encoded -->
+<otp width="256px" height="256px" secret="@userSecret" issuer="My Cool Site" user="@userEmail">
+
+<!-- Generates <svg> containing a QR code for otpauth (by configured QRIdenticonProvider instance) -->
+<!-- (Can be used with Google Authenticator, for example) -->
+<!-- https://github.com/google/google-authenticator/wiki/Key-Uri-Format -->
+<!-- If encode-secret attribute was not specified, the secret will be encoded only if it contains non-Base32 characters -->
+<!-- If encode-secret="true", the secret will be Base32-encoded -->
+<!-- If encode-secret="false", the secret will not be Base32-encoded -->
+<otp width="256px" height="256px" secret="@userSecret" issuer="My Cool Site" user="@userEmail" svg>
 ```
 
 ## Links

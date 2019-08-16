@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace KE.IdenticonSharp.AspNetCore.TagHelpers
 {
-    [HtmlTargetElement("identicon", TagStructure = TagStructure.WithoutEndTag)]
-    public class IdenticonTagHelper : TagHelper
+    [HtmlTargetElement("qr", TagStructure = TagStructure.WithoutEndTag)]
+    public class QRTagHelper : TagHelper
     {
         #region Var
         public bool Svg { get; set; }
@@ -30,7 +30,7 @@ namespace KE.IdenticonSharp.AspNetCore.TagHelpers
             output.TagName = "svg";
             output.TagMode = TagMode.StartTagAndEndTag;
 
-            SvgBuilder svg = IdenticonManager.Default.CreateSvg(value);
+            SvgBuilder svg = IdenticonManager.Get("qr").CreateSvg(value);
             StringBuilder innerSvg = new StringBuilder(256);
             foreach (var x in ((XElement)svg).Elements())
                 innerSvg.Append(x);
@@ -45,7 +45,7 @@ namespace KE.IdenticonSharp.AspNetCore.TagHelpers
         {
             output.TagName = "img";
             output.TagMode = TagMode.StartTagOnly;
-            output.Attributes.Add("src", IdenticonManager.Default.Create(value).ToBase64Link());
+            output.Attributes.Add("src", IdenticonManager.Get("qr").Create(value).ToBase64Link());
         }
         #endregion
     }

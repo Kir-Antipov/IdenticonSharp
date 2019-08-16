@@ -122,7 +122,7 @@ namespace KE.IdenticonSharp.AspNetCore.TagHelpers
             {
                 var chars = buckets[i]
                     .SelectMany(x => x.ToBits())
-                    .Bucket(8)
+                    .Bucket(5)
                     .Select(x => x.Aggregate(0, (a, b) => a * 2 + (b ? 1 : 0)))
                     .Select(x => Base32Charset[x]);
 
